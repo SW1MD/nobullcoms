@@ -50,7 +50,13 @@ export function useRepositories() {
       setLoading(true);
       const { data, error } = await supabase
         .from("repositories")
-        .select("*")
+        .select(
+          `
+          *,
+          comments:comments(count),
+          pull_requests:pull_requests(count)
+        `,
+        )
         .order("updated_at", { ascending: false });
 
       if (error) throw error;

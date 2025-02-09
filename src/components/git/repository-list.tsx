@@ -12,6 +12,7 @@ import {
   Clock,
   Search,
   Filter,
+  MessageSquare,
 } from "lucide-react";
 
 import { useRepositories } from "@/lib/hooks/use-repositories";
@@ -115,11 +116,15 @@ export default function RepositoryList() {
                 </div>
                 <div className="flex items-center">
                   <GitBranch className="h-4 w-4 mr-1" />
-                  {repo.branches}
+                  {repo.branches || 0} branches
                 </div>
                 <div className="flex items-center">
                   <GitPullRequest className="h-4 w-4 mr-1" />
-                  {repo.prs} pull requests
+                  {repo.prs || 0} pull requests
+                </div>
+                <div className="flex items-center">
+                  <MessageSquare className="h-4 w-4 mr-1" />
+                  {repo.comments?.[0]?.count || 0} comments
                 </div>
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-1" />

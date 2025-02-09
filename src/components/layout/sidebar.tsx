@@ -26,6 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuthContext } from "@/components/auth/auth-provider";
+import { useNotifications } from "@/contexts/notification-context";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -36,9 +37,15 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuthContext();
+  const { unreadCount } = useNotifications();
 
   const sidebarItems = [
-    { path: "/notifications", icon: Bell, label: "Notifications" },
+    {
+      path: "/notifications",
+      icon: Bell,
+      label: "Notifications",
+      badge: unreadCount > 0 ? unreadCount : undefined,
+    },
     { path: "/chat", icon: MessageSquare, label: "Chat" },
     { path: "/repositories", icon: GitBranch, label: "Repositories" },
     { path: "/drive", icon: FolderOpen, label: "Drive" },
@@ -87,7 +94,16 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       <item.icon
                         className={`h-4 w-4 ${!isCollapsed && "mr-2"}`}
                       />
-                      {!isCollapsed && item.label}
+                      {!isCollapsed && (
+                        <div className="flex items-center justify-between flex-1">
+                          <span>{item.label}</span>
+                          {item.badge && (
+                            <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-900 rounded-full">
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </Button>
                   </TooltipTrigger>
                   {isCollapsed && (

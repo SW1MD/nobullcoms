@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CommentList from "@/components/comments/comment-list";
 import {
   Dialog,
   DialogContent,
@@ -285,6 +286,7 @@ export default function RepositoryPage() {
           <TabsList>
             <TabsTrigger value="files">Files</TabsTrigger>
             <TabsTrigger value="pull-requests">Pull Requests</TabsTrigger>
+            <TabsTrigger value="comments">Comments</TabsTrigger>
           </TabsList>
 
           <TabsContent value="files" className="mt-4">
@@ -461,6 +463,10 @@ export default function RepositoryPage() {
                 console.log("Selected PR:", pr);
               }}
             />
+          </TabsContent>
+
+          <TabsContent value="comments" className="mt-4">
+            <CommentList repositoryId={repository.id} />
           </TabsContent>
         </Tabs>
 

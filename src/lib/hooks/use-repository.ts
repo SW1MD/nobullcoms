@@ -24,7 +24,7 @@ export function useRepository(id: string) {
     fetchRepository();
     fetchFiles();
 
-    // Subscribe to changes
+    // Subscribe to repository changes
     const repoChannel = supabase
       .channel(`public:repositories:${id}`)
       .on(
@@ -41,6 +41,7 @@ export function useRepository(id: string) {
       )
       .subscribe();
 
+    // Subscribe to file changes
     const filesChannel = supabase
       .channel(`public:repository_files:${id}`)
       .on(
@@ -51,8 +52,20 @@ export function useRepository(id: string) {
           table: "repository_files",
           filter: `repository_id=eq.${id}`,
         },
-        () => {
-          fetchFiles();
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setFiles((current) => [...current, payload.new as RepositoryFile]);
+          } else if (payload.eventType === "DELETE") {
+            setFiles((current) =>
+              current.filter((f) => f.id !== payload.old.id),
+            );
+          } else if (payload.eventType === "UPDATE") {
+            setFiles((current) =>
+              current.map((f) =>
+                f.id === payload.new.id ? (payload.new as RepositoryFile) : f,
+              ),
+            );
+          }
         },
       )
       .subscribe();
@@ -97,6 +110,31 @@ export function useRepository(id: string) {
     }
   };
 
+  const notifyFileChange = async (action: string, filename: string) => {
+    try {
+      const { data: repo } = await supabase
+        .from("repositories")
+        .select("owner_id")
+        .eq("id", id)
+        .single();
+
+      if (repo?.owner_id) {
+        await supabase.from("notifications").insert([
+          {
+            user_id: repo.owner_id,
+            type: "file_changed",
+            title: `File ${action}`,
+            description: `The file ${filename} was ${action} in repository ${repository?.name}`,
+            link: `/repositories/${id}`,
+            read: false,
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error creating notification:", error);
+    }
+  };
+
   const createFile = async ({
     path,
     content,
@@ -114,6 +152,7 @@ export function useRepository(id: string) {
       ]);
 
       if (error) throw error;
+      await notifyFileChange("created", path);
       return data;
     } catch (e) {
       console.error("Error creating file:", e);
@@ -132,6 +171,13 @@ export function useRepository(id: string) {
         .eq("id", fileId);
 
       if (error) throw error;
+
+      const file = files.find((f) => f.id === fileId);
+      if (file) {
+        if (path) await notifyFileChange("renamed", `${file.path} to ${path}`);
+        if (content) await notifyFileChange("updated", file.path);
+      }
+
       return data;
     } catch (e) {
       console.error("Error updating file:", e);
@@ -141,12 +187,14 @@ export function useRepository(id: string) {
 
   const deleteFile = async (fileId: string) => {
     try {
+      const file = files.find((f) => f.id === fileId);
       const { error } = await supabase
         .from("repository_files")
         .delete()
         .eq("id", fileId);
 
       if (error) throw error;
+      if (file) await notifyFileChange("deleted", file.path);
     } catch (e) {
       console.error("Error deleting file:", e);
       throw e;
