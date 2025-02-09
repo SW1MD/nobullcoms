@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import Sidebar from "./sidebar";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
@@ -10,7 +11,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         isCollapsed={isSidebarCollapsed}
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
-      <main className="flex-1 flex flex-col bg-gray-50">{children}</main>
+      <main className="flex-1 flex flex-col bg-gray-50">
+        <Outlet />
+      </main>
     </div>
   );
 }

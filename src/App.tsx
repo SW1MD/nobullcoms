@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useRoutes, Routes, Route, Navigate } from "react-router-dom";
+import { useRoutes, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Layout from "./components/layout/layout";
 import MessageList from "./components/chat/message-list";
 import MessageInput from "./components/chat/message-input";
@@ -14,6 +14,7 @@ import AIChat from "./components/ai/ai-chat";
 import CodeEditor from "./components/editor/code-editor";
 import routes from "tempo-routes";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { MessageProvider } from "@/contexts/message-context";
 import LoginPage from "@/pages/login";
 import { useAuthContext } from "@/components/auth/auth-provider";
 
@@ -44,7 +45,7 @@ function DrivePage() {
   );
 }
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
+function PrivateRoute() {
   const { user, loading } = useAuthContext();
 
   if (loading) {
@@ -55,110 +56,42 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 }
 
 function App() {
   return (
     <AuthProvider>
-      <Suspense fallback={<p>Loading...</p>}>
-        <>
+      <MessageProvider>
+        <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <ChatPage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/chat"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <ChatPage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/repositories"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <RepositoriesPage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/drive"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <DrivePage />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/tools"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <ToolsList />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <SettingsList />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/notifications"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <NotificationsList />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/ai"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <AIChat />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/editor"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <CodeEditor />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+
+            {/* Protected routes */}
+            <Route element={<PrivateRoute />}>
+              <Route element={<Layout />}>
+                <Route index element={<Navigate to="/chat" />} />
+                <Route path="chat" element={<ChatPage />} />
+                <Route path="repositories" element={<RepositoriesPage />} />
+                <Route path="drive" element={<DrivePage />} />
+                <Route path="tools" element={<ToolsList />} />
+                <Route path="settings" element={<SettingsList />} />
+                <Route path="notifications" element={<NotificationsList />} />
+                <Route path="ai" element={<AIChat />} />
+                <Route path="editor" element={<CodeEditor />} />
+              </Route>
+            </Route>
+
+            {/* Tempo routes */}
+            {import.meta.env.VITE_TEMPO === "true" && (
+              <Route path="/tempobook/*" element={useRoutes(routes)} />
+            )}
+
+            {/* Catch-all route */}
+            <Route path="*" element={<Navigate to="/chat" />} />
           </Routes>
-          {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-        </>
-      </Suspense>
+        </Suspense>
+      </MessageProvider>
     </AuthProvider>
   );
 }

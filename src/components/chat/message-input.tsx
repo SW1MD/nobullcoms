@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SendHorizontal } from "lucide-react";
-import { useMessages } from "@/lib/hooks/use-messages";
+import { useMessages } from "@/contexts/message-context";
 import { useAuthContext } from "@/components/auth/auth-provider";
 import { useSettings } from "@/lib/hooks/use-settings";
 
