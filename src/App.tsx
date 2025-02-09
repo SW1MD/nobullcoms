@@ -16,6 +16,7 @@ import routes from "tempo-routes";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { MessageProvider } from "@/contexts/message-context";
 import LoginPage from "@/pages/login";
+import RepositoryPage from "@/pages/repository";
 import { useAuthContext } from "@/components/auth/auth-provider";
 
 function ChatPage() {
@@ -73,6 +74,7 @@ function App() {
                 <Route index element={<Navigate to="/chat" />} />
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="repositories" element={<RepositoriesPage />} />
+                <Route path="repositories/:id" element={<RepositoryPage />} />
                 <Route path="drive" element={<DrivePage />} />
                 <Route path="tools" element={<ToolsList />} />
                 <Route path="settings" element={<SettingsList />} />

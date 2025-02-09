@@ -38,14 +38,14 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const { user, signOut } = useAuthContext();
 
   const sidebarItems = [
+    { path: "/notifications", icon: Bell, label: "Notifications" },
     { path: "/chat", icon: MessageSquare, label: "Chat" },
     { path: "/repositories", icon: GitBranch, label: "Repositories" },
     { path: "/drive", icon: FolderOpen, label: "Drive" },
     { path: "/tools", icon: Wrench, label: "Tools" },
-    { path: "/settings", icon: Settings, label: "Settings" },
-    { path: "/notifications", icon: Bell, label: "Notifications" },
     { path: "/ai", icon: Bot, label: "AI Assistant" },
     { path: "/editor", icon: Code, label: "Editor" },
+    { path: "/settings", icon: Settings, label: "Settings" },
   ];
 
   return (
