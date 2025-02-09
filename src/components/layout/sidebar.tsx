@@ -25,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuthContext } from "@/components/auth/auth-provider";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -34,6 +35,7 @@ interface SidebarProps {
 export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuthContext();
 
   const sidebarItems = [
     { path: "/chat", icon: MessageSquare, label: "Chat" },
@@ -104,14 +106,21 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=current-user" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarImage
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
+                    />
+                    <AvatarFallback>
+                      {user?.email?.[0].toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   {!isCollapsed && (
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium">John Doe</span>
+                      <span className="text-sm font-medium">
+                        {user?.user_metadata?.full_name ||
+                          user?.email?.split("@")[0]}
+                      </span>
                       <span className="text-xs text-gray-400">
-                        john@example.com
+                        {user?.email}
                       </span>
                     </div>
                   )}
@@ -120,8 +129,11 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               {isCollapsed && (
                 <TooltipContent side="right">
                   <div className="flex flex-col">
-                    <span className="font-medium">John Doe</span>
-                    <span className="text-xs">john@example.com</span>
+                    <span className="font-medium">
+                      {user?.user_metadata?.full_name ||
+                        user?.email?.split("@")[0]}
+                    </span>
+                    <span className="text-xs">{user?.email}</span>
                   </div>
                 </TooltipContent>
               )}
@@ -131,6 +143,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             variant="ghost"
             size="icon"
             className="text-gray-400 hover:text-white"
+            onClick={signOut}
           >
             <LogOut className="h-4 w-4" />
           </Button>

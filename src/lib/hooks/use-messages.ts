@@ -50,23 +50,15 @@ export function useMessages() {
     };
   }, []);
 
-  async function sendMessage(content: string) {
+  const sendMessage = async (message: Omit<Message, "id" | "created_at">) => {
     try {
-      const newMessage = {
-        content,
-        user_id: "current-user", // Replace with actual user ID
-        user_name: "John Doe", // Replace with actual user name
-        user_avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=current-user`,
-      };
-
-      const { error } = await supabase.from("messages").insert([newMessage]);
-
+      const { error } = await supabase.from("messages").insert([message]);
       if (error) throw error;
     } catch (e) {
       setError(e as Error);
       throw e;
     }
-  }
+  };
 
   return { messages, loading, error, sendMessage };
 }
