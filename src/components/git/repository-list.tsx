@@ -126,9 +126,16 @@ export default function RepositoryList() {
                   <MessageSquare className="h-4 w-4 mr-1" />
                   {repo.comments?.[0]?.count || 0} comments
                 </div>
+                <div
+                  className="flex items-center hover:text-blue-500 cursor-pointer"
+                  onClick={() => navigate(`/profile/${repo.owner_id}`)}
+                >
+                  <Clock className="h-4 w-4 mr-1" />
+                  Created by {repo.owner_name || "Unknown"}
+                </div>
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-1" />
-                  Updated on {new Date(repo.updated_at).toLocaleDateString()}
+                  Updated {new Date(repo.updated_at).toLocaleDateString()}
                 </div>
               </div>
             </div>

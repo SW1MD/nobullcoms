@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { useComments } from "@/lib/hooks/use-comments";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/components/auth/auth-provider";
 import { useSettings } from "@/lib/hooks/use-settings";
 
@@ -12,6 +13,7 @@ interface CommentListProps {
 }
 
 export default function CommentList({ repositoryId }: CommentListProps) {
+  const navigate = useNavigate();
   const { comments, loading, error, addComment } = useComments(repositoryId);
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,7 +81,12 @@ export default function CommentList({ repositoryId }: CommentListProps) {
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold">{comment.user_name}</span>
+                    <span
+                      className="font-semibold hover:text-blue-500 cursor-pointer"
+                      onClick={() => navigate(`/profile/${comment.user_id}`)}
+                    >
+                      {comment.user_name}
+                    </span>
                     <span className="text-xs text-gray-500">
                       {new Date(comment.created_at).toLocaleString()}
                     </span>

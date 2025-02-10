@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useMessages } from "@/contexts/message-context";
 
 export default function MessageList() {
+  const navigate = useNavigate();
   const { messages, loading, loadingMore, error, hasMore, loadMoreMessages } =
     useMessages();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -63,7 +65,12 @@ export default function MessageList() {
               </Avatar>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">{message.user_name}</span>
+                  <span
+                    className="font-semibold hover:text-blue-500 cursor-pointer"
+                    onClick={() => navigate(`/profile/${message.user_id}`)}
+                  >
+                    {message.user_name}
+                  </span>
                   <span className="text-xs text-gray-500">
                     {new Date(message.created_at).toLocaleTimeString()}
                   </span>

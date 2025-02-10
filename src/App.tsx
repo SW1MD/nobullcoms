@@ -18,6 +18,7 @@ import { MessageProvider } from "@/contexts/message-context";
 import { NotificationProvider } from "@/contexts/notification-context";
 import LoginPage from "@/pages/login";
 import RepositoryPage from "@/pages/repository";
+import ProfilePage from "@/pages/profile";
 import { useAuthContext } from "@/components/auth/auth-provider";
 
 function ChatPage() {
@@ -67,6 +68,9 @@ function App() {
       <NotificationProvider>
         <MessageProvider>
           <Suspense fallback={<div>Loading...</div>}>
+            {/* Tempo routes */}
+            {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
+
             <Routes>
               <Route path="/login" element={<LoginPage />} />
 
@@ -74,22 +78,28 @@ function App() {
               <Route element={<PrivateRoute />}>
                 <Route element={<Layout />}>
                   <Route index element={<Navigate to="/chat" />} />
-                  <Route path="chat" element={<ChatPage />} />
-                  <Route path="repositories" element={<RepositoriesPage />} />
-                  <Route path="repositories/:id" element={<RepositoryPage />} />
-                  <Route path="drive" element={<DrivePage />} />
-                  <Route path="tools" element={<ToolsList />} />
-                  <Route path="settings" element={<SettingsList />} />
-                  <Route path="notifications" element={<NotificationsList />} />
-                  <Route path="ai" element={<AIChat />} />
-                  <Route path="editor" element={<CodeEditor />} />
+                  <Route path="/chat" element={<ChatPage />} />
+                  <Route path="/repositories" element={<RepositoriesPage />} />
+                  <Route
+                    path="/repositories/:id"
+                    element={<RepositoryPage />}
+                  />
+                  <Route path="/drive" element={<DrivePage />} />
+                  <Route path="/tools" element={<ToolsList />} />
+                  <Route path="/settings" element={<SettingsList />} />
+                  <Route
+                    path="/notifications"
+                    element={<NotificationsList />}
+                  />
+                  <Route path="/ai" element={<AIChat />} />
+                  <Route path="/editor" element={<CodeEditor />} />
+                  <Route path="profile/:id" element={<ProfilePage />} />
                 </Route>
               </Route>
+
               {/* Catch-all route */}
               <Route path="*" element={<Navigate to="/chat" />} />
             </Routes>
-            {/* Tempo routes */}
-            {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
           </Suspense>
         </MessageProvider>
       </NotificationProvider>

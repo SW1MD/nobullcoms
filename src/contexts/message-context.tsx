@@ -44,10 +44,16 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
     const loadInitialMessages = async () => {
       setLoading(true);
       try {
-        const initialMessages = await fetchMessages();
-        setMessages(initialMessages);
+        const { data, error } = await supabase
+          .from("messages")
+          .select("*")
+          .order("created_at", { ascending: true });
+
+        if (error) throw error;
+        setMessages(data || []);
       } catch (e) {
         console.error("Error loading initial messages:", e);
+        setError(e as Error);
       } finally {
         setLoading(false);
       }
